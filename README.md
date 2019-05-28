@@ -1,11 +1,12 @@
 # CodinGame
 
-Codes source en C de certains CodinGames.
+**Codes source en C de certains CodinGames.**
 
-> Les codes présentés ne sont ni les seules réponses ni les plus optimisées. Ils ont été fait par un débutant comme des exercices d'entrainement.
+> Les codes présentés ne sont ni les seules réponses ni les plus optimisées. Ils ont été fait par un débutant pour s'entraîner !
+
+La plupart des codes si dessous ont aussi un compte rendu en PDF qui expliquant le code.
 
 Si vous voulez m'aider à rendre les codes un peu plus clairs n'hésitez pas ;)
-
 
 ## Facile
 
