@@ -1,0 +1,109 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+
+char ** initTab(int lignes, int colonnes)
+{
+    // On crée un tableau de caractères dans lequel stocker le diagramme.
+    char ** diagramme = (char **) malloc(colonnes*sizeof(char*));
+    int compt;
+    for(compt=0; compt<lignes; compt ++)
+    {
+        diagramme[compt] = (char *) malloc(lignes*sizeof(char));
+        // On crée un tableau qui correspond à une ligne dans chaque colonne du diagramme.
+    }  
+    return diagramme;
+}
+
+
+void remplirLigne(char * ligneSaisie, int indiceLigne, char ** diagramme, int L)
+{
+    /* Prend en entrée une chaîne de caractères d'une ligne pour les stocker 
+    caractère par caractère dans une ligne du tableau */
+    int j;
+    for (j=0; j<L; j++)
+    {
+        diagramme[indiceLigne][j] = ligneSaisie[j];
+    }
+}
+
+
+void deplacement(char ** diagramme, int H, int L)
+{
+    int k=0;
+    int i,j;
+    char depart;
+    char arrivee;
+    int bool;
+    for (k=0; k<H; k+=3)
+    {
+        // Une itération pour chaque lettre
+        depart = diagramme[0][k];
+        bool = 0;
+        i=1; 
+        j=k;
+        while((i<H) && (bool == 0))
+        {
+            if ((j>2) && (diagramme[i][j-1] == '-'))
+            {
+                j-=3;
+            }
+            else if ((j<L-2) && (diagramme[i][j+1] == '-'))
+            {
+                j+=2;
+            }
+            else if (diagramme[i+1][j] == '|')
+            {
+                i++; 
+            }
+            else
+            {
+                bool = 1;
+                arrivee = diagramme[i][j];
+                printf("%c%c", depart, arrivee);
+            }
+        }
+    }
+}
+
+    
+/*void afficheTab2D(int nbLigne, int nbColonne, char ** tab)
+{
+    // Affiche le diagramme.
+    int i=0;
+    int j = 0;
+    for (i=0; i<nbLigne; i++)
+    {
+        for(j=0; j<nbColonne; j++)
+        {
+            printf("%d ",tab[i][j]);
+        }
+    printf("\n");
+    }
+}*/
+
+
+int main()
+{
+    int L = 0;
+    int H = 0;
+    //Entrée de la largeur et de la hauteur
+    scanf("%d%d", &L, &H); 
+    fgetc(stdin);
+    char ligneSaisie[1025];
+    char ** diagramme = initTab(H, L);
+    int i;
+    for(i=0; i<H; i++)
+    {
+        fgets(ligneSaisie, 1025, stdin);
+        remplirLigne(ligneSaisie, i, diagramme, L);
+    }
+    deplacement(diagramme, H, L);
+    free(diagramme);
+    return 0;
+}
+        
+    
+    // Write an action using printf(). DON'T FORGET THE TRAILING \n
+    // To debug: fprintf(stderr, "Debug messages...\n");

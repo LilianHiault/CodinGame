@@ -1,0 +1,176 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,francais]{babel}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{lipsum}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\hypersetup{pdfstartview=XYZ}
+
+\title{Compte rendu de Shadows of the Knight - Episode 1}
+\author{Lilian Hiault}
+\date{02 mai 2019}
+
+\begin{document}
+
+\begin{figure}
+  \centerline{\includegraphics[scale=0.2]{logo-isima.jpeg}}
+\end{figure}
+
+\maketitle
+
+\tableofcontents
+
+\section*{Introduction}
+
+\og Shadows of the Knight - Episode 1\fg est un problème posé sur CodinGame \url{https://www.codingame.com/training/medium/shadows-of-the-knight-episode-1}. Une bombe a été posée dans un immeuble et Batman doit l'atteindre et la désamorcer avec qu'elle n'explose. Il saute de fenêtres en fenêtres en ne dispose que d'un détecteur qui lui indique la position relative de la bombe. \\
+Pour trouver la bombe en un nombre d'essais limité on applique une recherche dichotomique.
+
+\section{Les structures requises}
+
+Pour répondre à ce problème j'ai décidé de mettre à jour une zone de recherche dans laquelle la bombe se trouve à chaque itération de de déplacer Batman en son centre. Pour cela j'ai créé deux structures. \\
+
+\subsection{La zone de recherche}
+La première correspond à la zone de recherche. chaque nombre correspond au numéro de ligne ou de colonne qui délimite le secteur.
+\\
+
+\begin{boxedverbatim}
+typedef struct zoneDeRecherche
+{
+  int gauche;
+  int droite;
+  int haut;
+  int bas;
+} zone;
+\end{boxedverbatim}
+
+\subsection{La position de Batman}
+La seconde correspond à la position de Batman, c'est elle qui va se retrouver au centre de la zone de recherche à chaque itération.
+\\
+
+\begin{boxedverbatim}
+typedef struct position
+{
+  int x;
+  int y;
+} position;
+\end{boxedverbatim}
+
+
+\section{Actualiser la zone de recherche}
+
+\subsection{Modifier la zone de recherche}
+Une fois la direction de la bombe obtenue, il faut changer la taille de la zone de recherche. Cette fonction permet la changer selon les nouveau paramètres reçus.
+\\
+
+\begin{boxedverbatim}
+void initZoneRecherche(zone * pSecteurRech, position batman, int nvGauche,
+  int nvDroite, int nvHaut, int nvBas)
+{
+  pSecteurRech->gauche = nvGauche;
+  pSecteurRech->droite = nvDroite;
+  pSecteurRech->haut = nvHaut;
+  pSecteurRech->bas = nvBas;
+}
+\end{boxedverbatim}
+
+\subsection{Position de la bombe}
+Lorsqu'on reçoit la direction de la bombe il faut la prendre en compte pour changer la taille de la zone de recherche. Par exemple si elle se trouve au-dessus à droite il faut éliminer toutes les colonnes à gauche de Batman et toutes les ligne en dessous. De plus la bombe ne peut pas se trouver sur la ligne et colonne où se trouve le personnage. En reprennant cela avec tous les différents cas possible on modifie la zone grâce à la fonction
+\begin{boxedverbatim}
+initZoneRecherche
+\end{boxedverbatim}
+.\\
+
+\begin{boxedverbatim}
+void changerZoneRecherche(zone * pSecteurRech, char * bombeDir,
+  position batman)
+{
+  if(strcmp(bombeDir, "U") == 0) {
+    initZoneRecherche(pSecteurRech, batman, batman.x, batman.x,
+      pSecteurRech->haut, batman.y-1);
+  }
+  else if (strcmp(bombeDir, "UR") == 0) {
+    initZoneRecherche(pSecteurRech, batman, batman.x+1, pSecteurRech->droite,
+      pSecteurRech->haut, batman.y-1);
+  }
+  else if (strcmp(bombeDir, "R") == 0) {
+    initZoneRecherche(pSecteurRech, batman, batman.x+1, pSecteurRech->droite,
+      batman.y, batman.y);
+  }
+  else if (strcmp(bombeDir, "DR") == 0) {
+    initZoneRecherche(pSecteurRech, batman, batman.x+1, pSecteurRech->droite,
+      batman.y+1, pSecteurRech->bas);
+  }
+  else if (strcmp(bombeDir, "D") == 0) {
+    initZoneRecherche(pSecteurRech, batman, batman.x, batman.x, batman.y+1,
+      pSecteurRech->bas);
+  }
+  else if (strcmp(bombeDir, "DL") == 0) {
+    initZoneRecherche(pSecteurRech, batman, pSecteurRech->gauche, batman.x-1,
+      pSecteurRech->bas, batman.y+1);
+  }
+  else if (strcmp(bombeDir, "L") == 0) {
+    initZoneRecherche(pSecteurRech, batman, pSecteurRech->gauche, batman.x-1,
+      batman.y, batman.y);
+  }
+  else if (strcmp(bombeDir, "UL") == 0) {
+    initZoneRecherche(pSecteurRech, batman, pSecteurRech->gauche, batman.x-1,
+      pSecteurRech->haut, batman.y-1);
+  }
+}
+\end{boxedverbatim}
+
+
+\section{Déplacer Batman pour trouver la bombe}
+
+\subsection{Déplacer Batman}
+Pour déplacer le presonnage, je modifie les paramètres de la structure qui correspondent à sa position. Puisqu'on cherche à optimiser les déplacements par une recherche dichotomique, on place Batman au centre de la zone de recherche actuelle. Son abscisse est donc égale à l'indice de l'extrémité gauche plus celui de l'extrémité droite de la zone divisée par deux. On fait de même pour son ordonnée en calculant par rapport aux extrémitées hautes et basses de la zone.
+\\
+
+\begin{boxedverbatim}
+void deplaceBatman(zone secteurRech, position *pBatman)
+{
+  pBatman->x = (secteurRech.gauche + secteurRech.droite)/2;
+  pBatman->y = (secteurRech.haut + secteurRech.bas)/2;
+}
+\end{boxedverbatim}
+
+\subsection{Trouver la bombe}
+Une fois qu'on a récupéré les données (largeur, hauteur, nombre de tours) on initialise la position de Batman grâce à la structure qui correspond. Idem pour la zone de recherche. \\
+Lorsqu'on rentre dans la boucle du jeu, à chaque itération on reçoit la direction de la bombe par rapport au super hero. On utilise alors la fonction permettant de changer la taille de la zone de recherche en fonction de l'emplacement de la bombe. Lorsque cette zone est actualisée, le personnage se déplace au milieu. On affiche alors ses coordonnées.
+\\
+
+\begin{boxedverbatim}
+int main()
+{
+    int largeur;
+    int hauteur;
+    scanf("%d%d", &largeur, &hauteur);
+    int nbTours;
+    scanf("%d", &nbTours);
+    position batman;
+    position *pBatman = &batman;
+    scanf("%d%d", &batman.x, &batman.y);
+    zone secteurRech = {0, largeur-1, 0, hauteur-1};
+    zone *pSecteurRech = &secteurRech;
+
+    while (1) {
+        char bombeDir[4];
+        scanf("%s", bombeDir);
+        changerZoneRecherche(pSecteurRech, bombeDir, batman);
+        deplaceBatman(secteurRech, pBatman);
+        printf("%d %d\n", batman.x, batman.y);
+    }
+    return 0;
+}
+\end{boxedverbatim}
+
+\end{document}

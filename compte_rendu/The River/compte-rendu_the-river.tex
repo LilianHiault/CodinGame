@@ -1,0 +1,154 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,francais]{babel}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{lipsum}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\hypersetup{pdfstartview=XYZ}
+
+\title{Compte rendu : The River}
+\author{Lilian Hiault}
+\date{11 avril 2019}
+
+\begin{document}
+
+\begin{figure}
+  \centerline{\includegraphics[scale=0.2]{logo-isima.jpeg}}
+\end{figure}
+
+\maketitle
+
+\tableofcontents
+
+\section*{Introduction}
+
+\og The River I\fg et \og The River II\fg sont deux exercices posés par ng201 sur Coding Games (\url{https://www.codingame.com/training/easy/the-river-i-}).
+\\ Une rivière est une suite de nombres dont le terme suivant est lui même auquel on ajoute la somme de chaque chiffre qui le compose. Par exemple, si on prend la rivière 123, on a le terme suivant égal à $123+1+2+3=129$.
+
+\section{The River I}
+
+Dans ce premier exercice, on nous donne deux rivières et il faut trouver à quel nombre les deux rivières se retrouvent.
+
+\subsection{Comment incrémenter un rivière ?}
+
+Pour trouver ce point de rencontre j'ai créé deux rivières que j'incrémente jusqu'à ce qu'elles soient égales. J'ai donc créé une fonction pour calculer le terme suivant.
+\\
+
+\begin{boxedverbatim}
+  long long incrementerRiviere(long long  r)
+{
+    long long riviere = r;
+    long long somme = 0;
+    while(riviere != 0)
+    {
+        somme += riviere%10;
+        riviere /= 10;
+    }
+    return r+somme;
+}
+\end{boxedverbatim}
+
+\\ Dans cet exercice, on utilise le type \og long long\fg , c'est un type de données qui existe en C99 et qui nécessite 64 bits. Il peut stocker des nombres plus grands que la capacité des \og int\fg.
+\\ On crée d'abord une copie de la rivière donnée en paramètre pour pouvoir faire la somme plus tard. On va ensuite extraire chaque chiffre pour en faire la somme. On prend le reste de la division euclidienne par 10 ce qui nous donne le chiffre des unités qu'on peut ajouter à notre somme.
+\\ Une fois fait, on fait une division par 10 d'entiers sur la rivière, on ne garde donc que le quotient. Cela revient à supprimer le chiffre des unités et à décaler le nombre. Le nouveau chiffre des unités correspond à l'ancien chiffre de dizaines.
+\\ En continuant jusqu'à ce que la rivière soit nulle, on ajoute chaque chiffre puis on retourne la somme de ces chiffres avec la rivière donnée, on a calculé le terme suivant.
+
+\subsection{Que faut-il calculer ?}
+
+\begin{boxedverbatim}
+  int main()
+{
+    long long r1;
+    scanf("%lld", &r1);
+    long long r2;
+    scanf("%lld", &r2);
+    while (r1 != r2)
+    {
+        while (r1 < r2)
+        {
+            r1 = incrementerRiviere(r1);
+        }
+        while (r1 > r2)
+        {
+            r2 = incrementerRiviere(r2);
+        }
+    }
+    printf("%lld", r1);
+    return 0;
+}
+\end{boxedverbatim}
+
+\\ Après avoir récupéré les deux rivières données, il suffit d'incrémenter celle qui est la plus petite jusqu'à ce que les deux soient identiques et afficher alors à quel nombre elles le deviennent.
+
+\section{The River II}
+
+Ici, on nous donne un nombre et il faut trouver deux rivières qui se rencontrent à cet endroit.
+
+\subsection{Calculer le terme précédent}
+
+Je garde la même fonction d'incrémentation que dans l'exercice précédent (à ceci près qu'on manipule des entiers cette fois).
+
+\begin{boxedverbatim}
+  int incrementerRiviere(int r)
+{
+    int riviere = r;
+    int somme = 0;
+    while(riviere != 0)
+    {
+        somme += riviere%10;
+        riviere /= 10;
+    }
+    return r+somme;
+}
+\end{boxedverbatim}
+
+\subsection{trouver une deuxième rivière correspondant aux critères}
+
+On récupère l'entier donné par l'utilisateur. On considère cet entier comme une rivière qui commence à ce nombre. Il ne reste plus qu'à trouver une autre rivière qui atteint ce nombre.\\
+
+\begin{boxedverbatim}
+  int main()
+{
+    int r1;
+    scanf("%d", &r1);
+    int i = r1-1;
+    int trouve = 0;
+    while ((trouve==0) && (i>0))
+    {
+      int r2 = i;
+      r2 = incrementerRiviere(r2);
+      if (r1==r2)
+      {
+        trouve = 1;
+      }
+      i--;
+    }
+    if (trouve==1)
+    {
+      printf("YES\n");
+    }
+    else
+    {
+      printf("NO\n");
+    }
+    return 0;
+}
+\end{boxedverbatim}
+
+\\ On teste si le nombre précédant la première rivière k (donnée) retrouve l'intersection à son prochain terme, si c'est le cas, on a trouvé une rivière $k-1$ qui satisfait les conditions. Sinon, on réessaie avec la rivière $k-2$ et ainsi de suite. Si aucune rivière n'est trouvée lorsqu'on arrive à 0 alors il n'existe pas deux rivières qui se rencontrent au point donné.
+
+\section*{Conclusion}
+
+Ces deux problèmes ne m'ont pas posé de problèmes particulier.
+\\Le seul que j'ai eu a été mon temps d'éxécution du deuxième programme. Au début je re-calculais la seconde rivière jusqu'à ce qu'elle soit plus grande que la première alors qu'une seul itération suffit. En effet si on calcule une deuxième incrémentation de la rivière c'est qu'elle est inférieure à la rivière 1. Or puisqu'on parcours les solutions dans l'ordre décroissant on a donc déjà calculé le nouveau terme.
+
+\end{document}

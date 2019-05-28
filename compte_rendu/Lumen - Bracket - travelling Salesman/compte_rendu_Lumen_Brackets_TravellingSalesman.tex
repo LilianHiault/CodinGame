@@ -1,0 +1,113 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,francais]{babel}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{lipsum}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\hypersetup{pdfstartview=XYZ}
+
+\title{Compte rendu : Expression parenthésées - The Travelling Salesman - Lumen}
+\author{Lilian Hiault}
+\date{29 avril 2019}
+
+\begin{document}
+\begin{figure}
+  \centerline{\includegraphics[scale=0.2]{logo-isima.jpeg}}
+\end{figure}
+
+\maketitle
+
+\tableofcontents
+
+\section{Expressions parenthésées}
+
+\subsection{Introduction}
+
+\og Expressions paren\-thésées\fg est un problème posé sur CodinGame \url{https://www.codingame.com/training/easy/brackets-extreme-edition}. \\
+On doit vérifier qu'une expression est correctement parenthésée c'est à dire si toutes les parenthèses, crochets, accolades sont ouvert puis fermées dans le bon ordre.
+
+\subsection{Vérifier l'ouverture et fermeture des symboles}
+
+Une fois qu'on a récupéré l'exxpression sous forme d'une chaîne de caractère, j'ai créé une variable pour chaque symbole : parenthèse, crochet et accolade.
+Il faut ensuite vérifier chaque caractère un à un et tester si il appartient aux symboles voulus. Si c'est le cas et qu'il s'ouvre alors on incrémente la variable correspondant au symbole. Si c'est une fermeture alors on décrémente la variable. \\
+\begin{boxedverbatim}
+int main()
+{
+    char expression[2049];
+    scanf("%s", expression);
+    int parenthese = 0;
+    int crochet = 0;
+    int accolade = 0;
+    char caractere = expression[0];
+    int compt = 0;
+    int bienParenthesee = 1;
+    while (bienParenthesee && caractere != '\0')
+    {
+      caractere = expression[compt];
+      if (caractere == '(')
+      {
+        parenthese ++;
+      }
+      else if (caractere == ')')
+      {
+        parenthese --;
+      }
+      else if (caractere == '[')
+      {
+        crochet ++;
+      }
+      else if (caractere == ']')
+      {
+        crochet --;
+      }
+      else if (caractere == '{')
+      {
+        accolade ++;
+      }
+      else if (caractere == '}')
+      {
+        accolade --;
+      }
+\end{boxedverbatim}
+
+\subsection{Ordre d'ouverture}
+
+En gardant simplement les compteur il est impossible de savoir dans quel ordre on ouvre ou ferme les parenthèses,  )( est donc considéré comme bien parenthésé.
+\\
+Pour vérifier qu'on ne ferme pas les parenthèses avant de les ouvrir, à chaque fois que je modifie mes compteurs je vérifie que mon compteur est positif c'est à dire que je n'ai pas fermé plus de parenthèses qu'il n'y en a d'ouvertes.
+Si l'expression est mal parenthésée alors le booléen correspondant passe à faux et stope la boucle tant que. \\
+Si les symboles sont ouverts puis fermés dans le bon ordre et qu'il y a autant d'ouvertures que de fermetures, alors l'expression est bien parenthésée.
+\\
+\begin{boxedverbatim}
+  if ((parenthese < 0) || (crochet < 0) || (accolade < 0))
+      {
+        bienParenthesee = 0;
+      }
+      compt ++;
+    }
+    if (bienParenthesee && (parenthese == 0) && (crochet == 0)
+       && (accolade == 0))
+    {
+      printf("true\n");
+    }
+    else
+    {
+      printf("false\n");
+    }
+    return 0;
+}
+\end{boxedverbatim}
+
+\subsection{Conclusion}
+L'idée de faire des compteurs m'est venue assez naturellement pour résoudre ce problème et paraissait assez simple. Néanmoins j'ai eu plus de mal à modéliser les différentes situations sous la forme de compteurs comme par exemple pour l'ordre d'ouverture. Je n'ai pas réussi à prendre en compte les différents symboles imbriqués comme par exemple \og {(})\fg qui est reconnu comme bien parenthésé par mon programme. Malgré cela, mon code à tout de même eu 100\% de score sur Codingames.
+
+\section{The Travelling Salesman}
