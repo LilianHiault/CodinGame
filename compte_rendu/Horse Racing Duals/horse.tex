@@ -1,0 +1,93 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,francais]{babel}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{pdfstartview=XYZ}
+
+\title{Compte rendu Horse Racing Duals}
+\author{lilian HIAULT}
+\date{17 mai 2019}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section*{Introduction}
+
+<<Horse Racing Duals>> est un problème posé sur Codingame (\url{https://www.codingame.com/training/easy/horse-racing-duals}. Il faut afficher le plus faible écart de puissance entre deux chevaux parmi ceux présentés.
+
+\section{Coment stocker les données}
+
+On crée un tableau dans lequel on stocke les performances des chevaux.
+
+
+\begin{verbatim}
+int main()
+{
+    int n;
+    int *tab = (int*) malloc(n*sizeof(int));
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        int Pi;
+        scanf("%d", &Pi);
+        tab[i] = Pi;
+    }
+\end{verbatim}
+
+\section{Trouver le plus petit écart}
+
+\subsection{Trier la tableau}
+
+Afin de calculer les écarts plus rapidement je trie la tableau grâce à l'algorithme proposé sur le sujet.
+
+\begin{verbatim}
+qsort(tab, n, sizeof(int ), compare);
+\end{verbatim}
+
+La fonction est d'abord définie au début du programme.
+
+\begin{verbatim}
+ int compare(void const *a, void const *b)
+ {
+     int const *pa = a;
+     int const *pb = b;
+     return *pa-*pb;
+}
+\end{verbatim}
+
+\subsection{Calculer les écarts}
+
+Une fois que le tableau est trié il suffit de calculer les écarts de puissance entre un cheval et celui qui est juste à côté.
+
+\begin{verbatim}
+    int j;
+    int diff = tab[1] - tab[0];
+    for (j=1; j<n; j++)
+    {
+        if ((tab[j] - tab[j-1]) <= diff)
+        {
+            diff = tab[j] - tab[j-1];
+        }
+    }
+    printf("%d\n", diff);
+    return 0;
+}
+\end{verbatim}
+
+\section{Conclusion}
+
+Le programme fonctionne dans les cas simples mais il n'a atteint un score que de 53\% sur Codingame.
+
+\end{document}
