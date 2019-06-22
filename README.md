@@ -2,9 +2,9 @@
 
 **Codes source en C de quelques puzzles sur CodinGames.**
 
-> Les codes présentés ne sont ni les seules réponses ni les plus optimisées. Ils ont été faits par un débutant pour s'entraîner !
+> Les réponses présentées ne sont ni les seules ni les plus optimisées. Les codes ont été réalisés par un débutant pour s'entraîner !
 
-La plupart des codes si dessous ont aussi un compte rendu en PDF expliquant le code.
+La plupart des codes ci-dessous sont associés à un compte rendu en PDF les expliquant.
 
 Si vous voulez m'aider à rendre les codes un peu plus clairs n'hésitez pas ;)
 
