@@ -4,16 +4,16 @@
 
 
 void initialiseLigne(char ligne[], int numLigne, int** piece, int taille, int intensite)
-//On rempli le tableau d'entier avec les bougies
+// Pour un ligne donnée, initialiseLigne positionne les bougies dans le tableau de la pièce
 {
   int i;
-  for(i=0; i<taille*2-1; i+=2)
+  for(i=0; i<taille*2-1; i+=2) // On avance de 2 en 2 pour ne pas prendre en compte les espaces entre les caractères
+  {
+    if(ligne[i] == 'C')
     {
-      if(ligne[i] == 'C')
-	{
-	  piece[numLigne][i/2] = intensite;
-	}
+      piece[numLigne][i/2] = intensite; // Si le caractère est un 'C' alors c'est une bougie et on lui donne valeur la valeur de l'intensité de la lumière
     }
+  }
 }
 
 
@@ -45,6 +45,7 @@ int luminosite(int lumiere, int** piece, int taille, int i, int j)
   if((i+1<taille) && (j-1>=0) &&  piece[i+1][j-1] == lumiere){
     somme ++;
   }
+  // Si il y a au moins une lumière voisine à la case ciblée alors la somme sera > 0
   return somme;
 }
 
@@ -52,92 +53,77 @@ int luminosite(int lumiere, int** piece, int taille, int i, int j)
 void eclairer(int intensite, int** piece, int taille)
 //On éclaire la case si on trouve une lumière parmi ses voisons puis on recommence avec une luminosité plus faible
 {
-  int lumiere = intensite;
   int i,j;
-  while(lumiere > 1)
-    {
-      for(i=0; i<taille; i++)
-	     {
-	        for(j=0; j<taille; j++)
-	         {
-	            if((piece[i][j] == 0) && (luminosite(lumiere, piece, taille, i, j) != 0))
-		            {
-		                piece[i][j] = lumiere-1;
-                  }
-	               }
-               }
-               lumiere --;
-             }
-           }
-
-
-/*void afficheTab2D(int** tab, int taille)
-{
-  printf("Tableau : \n");
-  int i,j;
-  for(i=0; i<taille; i++)
+  while(intensite > 1)
+  {
+    for(i=0; i<taille; i++)
     {
       for(j=0; j<taille; j++)
-	{
-	  printf("%d ", tab[i][j]);
-	}
-      printf("\n");
+      {
+        if((piece[i][j] == 0) && (luminosite(intensite, piece, taille, i, j) != 0))
+        // Si on se trouve sur une case sombre et qu'il y a une case illuminée parmi les cases voisines ...
+        {
+          piece[i][j] = intensite-1;
+          // ... alors la case actuelle prendra la valeur de la luminosité -1
+        }
+      }
     }
-  printf("\n");
-}*/
+    intensite --;
+    // On recommence mais avec une valeur de la lumière plus faible
+  }
+}
 
 
 int ombre(int** piece, int taille)
+// On cherche le nombre de zones d'ombre dans la pièce
 {
-  int somme = 0;
+  int somme = 0; // Nombre total de zones d'ombre
   int i,j;
   for(i=0; i<taille; i++)
+  {
+    for(j=0; j<taille; j++)
     {
-      for(j=0; j<taille; j++)
-	{
-	  if(piece[i][j] == 0)
-	  {
-	    somme ++;
-	  }
-	}
+      // Pour chaque case de la pièce ...
+      if(piece[i][j] == 0) // ... si la valeur de la luminosité est nulle (=ombre) ...
+      {
+        somme ++; // ... alors on rajoutte une zome d'ombre
+      }
     }
+  }
   return somme;
 }
 
 
 int main()
 {
-    int taille;
-    scanf("%d", &taille);
-    int intensite;
-    scanf("%d", &intensite); fgetc(stdin);
-    int* piece[taille];
-    int i;
-    for(i=0; i<taille; i++)
+  int taille; // Taille de la pièce dans laquelle on se trouve
+  scanf("%d", &taille);
+  int intensite; // Intensité de la lumière : nombres de cases éclairées autour de la bougie (à chaque case la lumière décroit)
+  scanf("%d", &intensite); fgetc(stdin);
+  int* piece[taille]; // Création d'un tableau en deux dimension qui représentera la pièce vue du dessus
+  int i;
+  for(i=0; i<taille; i++)
+  {
+    piece[i] = (int *) malloc(taille*sizeof(int));
+    // A chaque case du tableau on associe un tableau
+  }
+  // Dans chaque case du tableau 2D on donne la valeur de la luminosité à cet endroit
+  int j;
+  for(i=0; i<taille; i++)
+  {
+    for(j=0; j<taille; j++)
     {
-	     piece[i] = (int *) malloc(taille*sizeof(int));
+      piece[i][j] = 0; // On initialise la luminosité de chaque case de la pièce à 0 (sombre)
     }
-    int j;
-    // Tableau d'entier représentant la salle dont chaque case désigne la luminosité
-    for(i=0; i<taille; i++)
-      {
-	       for(j=0; j<taille; j++)
-	        {
-	           piece[i][j] = 0;
-	          }
-          }
-    for (i = 0; i < taille; i++) {
-        char ligne[501];
-        fgets(ligne, 501, stdin);
-	       // On positionne les bougies dans la pièce
-	        initialiseLigne(ligne, i, piece, taille, intensite);
-        }
-    //afficheTab2D(piece, taille);
-    // On dispose la lumière autour des bougies
-    eclairer(intensite, piece, taille);
-    //afficheTab2D(piece, taille);
-    // On compte les zones d'ombres
-    int nbOmbre = ombre(piece, taille);
-    printf("%d\n", nbOmbre);
-    return 0;
+  }
+  for (i = 0; i < taille; i++)
+  {
+    char ligne[501]; // Chaîne de caractère qui correspond à l'entrée de l'utilisateur pour chaque ligne
+    fgets(ligne, 501, stdin);
+    initialiseLigne(ligne, i, piece, taille, intensite); // On positionne les bougies dans la pièce
+  }
+  eclairer(intensite, piece, taille); // On dispose la lumière autour des bougies
+  int nbOmbre = ombre(piece, taille); // On compte les zones d'ombres
+  printf("%d\n", nbOmbre);
+  return 0;
 }

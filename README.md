@@ -2,7 +2,7 @@
 
 **Codes source en C de quelques puzzles sur CodinGames.**
 
-> Les codes présentés ne sont ni les seules réponses ni les plus optimisées. Ils ont été fait par un débutant pour s'entraîner !
+> Les codes présentés ne sont ni les seules réponses ni les plus optimisées. Ils ont été faits par un débutant pour s'entraîner !
 
 La plupart des codes si dessous ont aussi un compte rendu en PDF expliquant le code.
 
