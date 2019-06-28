@@ -21,5 +21,5 @@ Si vous voulez m'aider à rendre les codes un peu plus clairs n'hésitez pas ;)
 
 ## Moyen
 
-- La Bataille (25%)
 - Shadows of the Knight - Episode 1 (85%)
+- War (25%)
