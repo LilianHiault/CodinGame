@@ -13,8 +13,8 @@
 int main()
 {
     int n;
-    int *tab = (int*) malloc(n*sizeof(int));
     scanf("%d", &n);
+    int *tab = (int*) malloc(n*sizeof(int));
     for (int i = 0; i < n; i++) {
         int Pi;
         scanf("%d", &Pi);
